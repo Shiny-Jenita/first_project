@@ -1,4 +1,3 @@
-
 lambda_handler(event, context)
 import json
 
@@ -9,7 +8,7 @@ def lambda_handler(event, context):
     # Business logic goes here
     result = {
         "statusCode": 200,
-        "body": json.dumps({"message": "Hello from Lambda!"})
+        "body": json.dumps({"message": "Hello from Lambda! updated"})
     }
 
     return result
