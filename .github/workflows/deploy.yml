@@ -48,7 +48,7 @@ jobs:
           echo "Invoking Lambda with test payload..."
           PAYLOAD=$(echo '{"test":"hello"}' | base64)
           aws lambda invoke \
-            --function-name lambda_func \
+            --function-name lamda_func \
             --payload $PAYLOAD \
             response.json
           echo "Lambda response:"
