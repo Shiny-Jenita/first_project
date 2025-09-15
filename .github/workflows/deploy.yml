@@ -64,7 +64,7 @@ jobs:
               EVENT=$(jq -c -n \
                 --arg bucket "my-unique-buck-name" \
                 --arg key "lambda_package_v${{ github.run_number }}.zip" \
-                "{s3: {bucket: {name: $bucket}, object: {key: $key}}}")
+                '{s3: {bucket: {name: $bucket}, object: {key: $key}}}')
 
               echo "Sending event: $EVENT"
               aws lambda invoke \
