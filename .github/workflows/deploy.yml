@@ -62,18 +62,17 @@ jobs:
       - name: Invoke Lambda with S3 event payload
         run: |
           EVENT=$(jq -n \
-            --arg bucket "my-unique-buck-name" \
-            --arg key "lambda_package_v${{ github.run_number }}.zip" \
-            '{s3: {bucket: {name: $bucket}, object: {key: $key}}}')
+              --arg bucket "my-unique-buck-name" \
+              --arg key "lambda_package_v${{ github.run_number }}.zip" \
+              '{s3: {bucket: {name: $bucket}, object: {key: $key}}}')
+
+            aws lambda invoke \
+              --function-name lamda_func \
+              --payload "$EVENT" \
+              response.json
           
-          echo "Invoking Lambda with event: $EVENT"
-          aws lambda invoke \
-            --function-name lamda_func \
-            --payload "$EVENT" \
-            response.json
-          
-          echo "Lambda response:"
-          cat response.json
+            echo "Lambda response:"
+            cat response.json
 
       #Cleanup: keep only last 5 versioned packages
       - name: Cleanup old Lambda packages in S3
