@@ -63,7 +63,7 @@ jobs:
         run: |
           EVENT=$(jq -c -n \
             --arg bucket "my-unique-buck-name" \
-            --arg key "lambda_package_v${{ github.run_number }}.zip" \
+            --arg key "lambda_package_v${{ github.run_id }}.zip" \
             '{
               "Records": [
                 {
