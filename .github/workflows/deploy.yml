@@ -30,6 +30,31 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1  
           
+      - name: Invoke Lambda with S3 event payload
+        run: |
+          EVENT=$(jq -c -n \
+            --arg bucket "my-unique-buck-name" \
+            --arg key "lambda_package_v${{ github.run_id }}.zip" \
+            '{
+              "Records": [
+                {
+                  "s3": {
+                    "bucket": { "name": $bucket },
+                    "object": { "key": $key }
+                  }
+                }
+              ]
+            }')
+
+              echo "Sending event: $EVENT"
+              aws lambda invoke \
+                --function-name lamda_func \
+                --cli-binary-format raw-in-base64-out \
+                --payload "$EVENT" \
+                response.json
+              echo "Lambda response:"
+              cat response.json
+          
       - name: Upload Lambda package to S3
         run: |
           aws s3 cp lambda_package.zip s3://my-unique-buck-name/lambda_package.zip
@@ -59,30 +84,7 @@ jobs:
           echo "Lamda response:"
           cat response.json
         
-      - name: Invoke Lambda with S3 event payload
-        run: |
-          EVENT=$(jq -c -n \
-            --arg bucket "my-unique-buck-name" \
-            --arg key "lambda_package_v${{ github.run_id }}.zip" \
-            '{
-              "Records": [
-                {
-                  "s3": {
-                    "bucket": { "name": $bucket },
-                    "object": { "key": $key }
-                  }
-                }
-              ]
-            }')
-
-              echo "Sending event: $EVENT"
-              aws lambda invoke \
-                --function-name lamda_func \
-                --cli-binary-format raw-in-base64-out \
-                --payload "$EVENT" \
-                response.json
-              echo "Lambda response:"
-              cat response.json
+      
 
 
 

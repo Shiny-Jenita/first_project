@@ -1,0 +1,78 @@
+name: Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - main  # trigger on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies and package Lambda
+        run: |
+          pip install -r requirements.txt -t .
+          zip -r lambda_package.zip .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  
+
+      # ✅ Use a versioned file name
+      - name: Set ZIP name
+        run: echo "ZIP_NAME=lambda_package_v${{ github.run_id }}.zip" >> $GITHUB_ENV
+
+      - name: Upload Lambda package to S3
+        run: aws s3 cp lambda_package.zip s3://my-unique-buck-name/$ZIP_NAME
+
+      - name: Verify Upload
+        run: aws s3 ls s3://my-unique-buck-name/ | grep lambda_package
+
+      - name: Invoke Lambda with S3 event payload
+        run: |
+          EVENT=$(jq -c -n \
+            --arg bucket "my-unique-buck-name" \
+            --arg key "$ZIP_NAME" \
+            '{
+              "Records": [
+                {
+                  "eventSource": "aws:s3",
+                  "eventName": "ObjectCreated:Put",
+                  "s3": {
+                    "bucket": { "name": $bucket },
+                    "object": { "key": $key }
+                  }
+                }
+              ]
+            }')
+
+          echo "Sending event: $EVENT"
+          aws lambda invoke \
+            --function-name lamda_func \
+            --cli-binary-format raw-in-base64-out \
+            --payload "$EVENT" \
+            response.json
+
+          echo "Lambda response:"
+          cat response.json
+
+      # ✅ Cleanup old versions (keep last 5)
+      - name: Cleanup old Lambda packages in S3
+        run: |
+          FILES=$(aws s3 ls s3://my-unique-buck-name/ | grep lambda_package_v | sort | head -n -5 | awk '{print $4}')
+          for file in $FILES; do
+            echo "Deleting $file"
+            aws s3 rm s3://my-unique-buck-name/$file
+          done
