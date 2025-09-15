@@ -45,10 +45,12 @@ jobs:
             --output table
       - name: Test Invoke Lambda
         run: |
-          aws lambda invoke \
-            --function-name lamda_func \
-            --payload '{"test":"hello"}' \
+            aws lambda invoke \
+            --function-name lambda_func \
+            --payload '{"test": "hello"}' \
             response.json
-          echo "Lambda response:"
-          cat response.json
+            echo "Lambda response:" 
+            cat response.json
+      
+
       
