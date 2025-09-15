@@ -7,7 +7,7 @@ def lambda_handler(event, context):
     # Business logic goes here
     result = {
         "statusCode": 200,
-        "body": json.dumps({"message": "Lambda Triggered again..."})
+        "body": json.dumps({"message": "Lambda Triggered again....."})
     }
 
     return result
