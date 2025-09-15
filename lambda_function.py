@@ -1,4 +1,3 @@
-lambda_handler(event, context)
 import json
 
 def lambda_handler(event, context):
