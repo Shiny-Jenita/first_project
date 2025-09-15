@@ -43,7 +43,7 @@ jobs:
             --function-name lamda_func \
             --query '{LastModified:LastModified, Runtime:Runtime, Handler:Handler, FunctionName:FunctionName}' \
             --output table
-      - - name: Test Invoke Lambda
+      - name: Test Invoke Lambda
         run: |
           echo "Invoking Lambda with test payload..."
           PAYLOAD=$(echo '{"test":"hello"}' | base64)
