@@ -4,7 +4,7 @@ pipeline {
     environment {
         EC2_USER = 'ubuntu'
         EC2_HOST = '18.215.179.42'           // Your EC2 public IP
-        SSH_KEY = credentials('github-token-forec2') // Jenkins credential ID
+      //  SSH_KEY = credentials('github-token-forec2') // Jenkins credential ID
     }
 
     stages {
