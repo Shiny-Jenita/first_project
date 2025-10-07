@@ -15,22 +15,21 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            steps {
-                echo 'Deploying to EC2...'
-                sh """
-                ssh -i $SSH_KEY -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST '
-                    cd /home/ubuntu/app || mkdir -p /home/ubuntu/app
-                    cd /home/ubuntu/app
-                    git pull || git clone https://github.com/Shiny-Jenita/first_project.git .
-                    # Add your app build commands here, e.g.:
-                    # npm install
-                    # docker-compose down && docker-compose up -d
-                    # systemctl restart myapp
-                '
-                """
+       stage('Deploy to EC2') {
+    steps {
+        sshagent(['ec2-ssh-key']) {
+            sh """
+            ssh -o StrictHostKeyChecking=no ubuntu@18.215.179.42 '
+                cd /home/ubuntu/app || mkdir -p /home/ubuntu/app
+                cd /home/ubuntu/app
+                git pull || git clone https://github.com/Shiny-Jenita/first_project.git .
+                # Add app start commands
+            '
+            """
+                      }
             }
-        }
+          }
+
     }
 }
 
