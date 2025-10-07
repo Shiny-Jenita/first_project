@@ -1,1 +1,1 @@
-# first_project to AWS
+# first_project to AWS EC2
