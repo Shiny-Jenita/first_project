@@ -22,7 +22,7 @@ pipeline {
             ssh -o StrictHostKeyChecking=no ubuntu@18.215.179.42 '
                 cd /home/ubuntu/app || mkdir -p /home/ubuntu/app
                 cd /home/ubuntu/app
-                git pull || git clone https://github.com/Shiny-Jenita/first_project.git .
+                git pull || git clone git@github.com:Shiny-Jenita/first_project.git .
                 # Add app start commands
             '
             """
